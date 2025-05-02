@@ -6,31 +6,38 @@ def fuzzify_service(x):
     sedang = 0
     tinggi = 0
 
-    # Rendah
-    if x <= 30:
+    # Rendah: 1 hingga 10, turun sampai 0 di 50
+    if x <= 10:
         rendah = 1
-    elif 30 < x <= 50:
-        rendah = (50 - x) / (50 - 30)
+    elif 10 < x < 50:
+        rendah = (50 - x) / (50 - 10)
+    elif x >= 50:
+        rendah = 0
 
-    # Sedang (trapesium: 30, 40, 60, 80)
-    if 30 <= x <= 40:
-        sedang = (x - 30) / (40 - 30)
-    elif 40 <= x <= 60:
+    # Sedang: 0 di 30, naik sampai 1 di 50, tetap 1 sampai 60, turun sampai 0 di 80
+    if 30 < x < 50:
+        sedang = (x - 30) / (50 - 30)
+    elif 50 <= x <= 60:
         sedang = 1
-    elif 60 < x <= 80:
+    elif 60 < x < 80:
         sedang = (80 - x) / (80 - 60)
+    else:
+        sedang = max(0, sedang)
 
-    # Tinggi
-    if 70 <= x <= 100:
-        tinggi = (x - 70) / (100 - 70)
-    if x >= 100:
+    # Tinggi: 0 di 60, naik ke 1 di 90, tetap 1 sampai 100
+    if 60 < x < 90:
+        tinggi = (x - 60) / (90 - 60)
+    elif x >= 90:
         tinggi = 1
+    else:
+        tinggi = max(0, tinggi)
 
     return {
         'rendah': rendah,
         'sedang': sedang,
         'tinggi': tinggi
     }
+
 
 # Fungsi Keanggotaan Harga
 def fuzzify_price(x):
