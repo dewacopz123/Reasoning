@@ -113,11 +113,11 @@ def inferensi(servis, harga):
                     result[kategori] = alpha
     return result
 
-# Defuzzifikasi (Centroid)
-def defuzzify(fuzzy_output):
-    numerator = sum(alpha * output_scores[kat] for kat, alpha in fuzzy_output.items())
-    denominator = sum(fuzzy_output.values())
-    return numerator / denominator if denominator != 0 else 0
+# Defuzzifikasi (Center of gravity)
+def defuzzifikasi(output):
+    pembilang = sum(alpha * z for alpha, z in output)
+    penyebut = sum(alpha for alpha, _ in output)
+    return pembilang / penyebut if penyebut != 0 else 0
 
 # Main Program
 def main():
@@ -131,9 +131,9 @@ def main():
         harga = row["harga"]
 
         fuzzy_s = fuzzify_service(pelayanan)
-        fuzzy_h = fuzzify_price(harga)
+        fuzzy_h = fuzzify_harga(harga)
         fuzzy_output = inferensi(fuzzy_s, fuzzy_h)
-        skor = defuzzify(fuzzy_output)
+        skor = defuzzifikasi(fuzzy_output)
 
         hasil.append({
             'ID Pelanggan': id_pelanggan,
