@@ -40,31 +40,43 @@ def fuzzify_service(x):
 
 
 # Fungsi Keanggotaan Harga
-def fuzzify_price(x):
+def fuzzify_harga(x):
     murah = 0
     sedang = 0
     mahal = 0
 
-    if x <= 30000:
+    # Murah: 1 dari 0–25.000, turun ke 0 di 35.000
+    if x <= 25000:
         murah = 1
-    elif 30000 < x <= 35000:
-        murah = (35000 - x) / (35000 - 30000)
+    elif 25000 < x < 35000:
+        murah = (35000 - x) / (35000 - 25000)
+    elif x >= 35000:
+        murah = 0
 
-    if 30000 <= x <= 40000:
+    # Sedang: 0 di 30.000, naik ke 1 di 40.000, turun ke 0 di 50.000
+    if 30000 < x < 40000:
         sedang = (x - 30000) / (40000 - 30000)
-    elif 40000 <= x <= 50000:
-        sedang = (50000 - x) / (50000 - 40000)
+    elif 40000 <= x <= 45000:
+        sedang = 1
+    elif 45000 < x < 50000:
+        sedang = (50000 - x) / (50000 - 45000)
+    else:
+        sedang = max(0, sedang)
 
-    if 45000 <= x <= 55000:
+    # Mahal: 0 di 45000, naik ke 1 di 55000, tetap 1 sampai 70000
+    if 45000 < x < 55000:
         mahal = (x - 45000) / (55000 - 45000)
-    if x >= 55000:
+    elif x >= 55000:
         mahal = 1
+    else:
+        mahal = max(0, mahal)
 
     return {
         'murah': murah,
         'sedang': sedang,
         'mahal': mahal
     }
+
 
 # Skor Output
 output_scores = {
