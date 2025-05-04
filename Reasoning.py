@@ -1,12 +1,15 @@
 import pandas as pd
 
-# Fungsi Keanggotaan Servis
+# -------------------------------
+# FUZZIFICATION: Fungsi Keanggotaan untuk Kualitas Servis
+# Linguistik: Rendah, Sedang, Tinggi (Range: 1–100)
+# -------------------------------
 def fuzzify_service(x):
     rendah = 0
     sedang = 0
     tinggi = 0
 
-    # Rendah: 1 hingga 10, turun sampai 0 di 50
+    # Rendah: Derajat keanggotaan penuh (1) jika x <= 10, turun linear sampai 0 di x = 50
     if x <= 10:
         rendah = 1
     elif 10 < x < 50:
@@ -14,7 +17,7 @@ def fuzzify_service(x):
     else:
         rendah = 0
 
-    # Sedang: 0 di 30, naik ke 1 di 50, turun ke 0 di 80
+    # Sedang: Naik dari 0 di x = 30 ke 1 di x = 50, tetap 1 hingga x = 60, turun ke 0 di x = 80
     if 30 < x < 50:
         sedang = (x - 30) / (50 - 30)
     elif 50 <= x <= 60:
@@ -24,7 +27,7 @@ def fuzzify_service(x):
     else:
         sedang = max(0, sedang)
 
-    # Tinggi: 0 di 60, naik ke 1 di 90, tetap 1 hingga 100
+    # Tinggi: Naik dari 0 di x = 60 ke 1 di x = 90, tetap 1 sampai x = 100
     if 60 < x < 90:
         tinggi = (x - 60) / (90 - 60)
     elif x >= 90:
@@ -38,13 +41,16 @@ def fuzzify_service(x):
         'tinggi': tinggi
     }
 
-# Fungsi Keanggotaan Harga
+# -------------------------------
+# FUZZIFICATION: Fungsi Keanggotaan untuk Harga
+# Linguistik: Murah, Sedang, Mahal (Range: 25.000–55.000)
+# -------------------------------
 def fuzzify_harga(x):
     murah = 0
     sedang = 0
     mahal = 0
 
-    # Murah: 1 dari 0–25.000, turun ke 0 di 35.000
+    # Murah: Derajat keanggotaan penuh (1) jika x <= 25000, turun ke 0 di x = 35000
     if x <= 25000:
         murah = 1
     elif 25000 < x < 35000:
@@ -52,7 +58,7 @@ def fuzzify_harga(x):
     else:
         murah = 0
 
-    # Sedang: 0 di 30.000, naik ke 1 di 40.000, turun ke 0 di 50.000
+    # Sedang: Naik dari 0 di x = 30000 ke 1 di x = 40000, tetap 1 hingga x = 45000, turun ke 0 di x = 50000
     if 30000 < x < 40000:
         sedang = (x - 30000) / (40000 - 30000)
     elif 40000 <= x <= 45000:
@@ -62,7 +68,7 @@ def fuzzify_harga(x):
     else:
         sedang = max(0, sedang)
 
-    # Mahal: 0 di 45000, naik ke 1 di 55000, tetap 1 sampai 70000
+    # Mahal: Naik dari 0 di x = 45000 ke 1 di x = 55000, tetap 1 sampai x = 70000
     if 45000 < x < 55000:
         mahal = (x - 45000) / (55000 - 45000)
     elif x >= 55000:
@@ -76,7 +82,10 @@ def fuzzify_harga(x):
         'mahal': mahal
     }
 
-# (dari grafik kelayakan)
+# -------------------------------
+# Output Fuzzy Set untuk Defuzzification (Kelayakan)
+# Nilai representatif untuk: Tidak Layak, Kurang, Cukup, Layak, Sangat Layak
+# -------------------------------
 output_scores = {
     'tidak layak': 10,
     'kurang': 35,
@@ -85,8 +94,12 @@ output_scores = {
     'sangat layak': 100
 }
 
-# Inferensi 
+# -------------------------------
+# INFERENSI: Menentukan hasil dari kombinasi fuzzy input
+# Berdasarkan aturan fuzzy logic (BAB 2 poin 3)
+# -------------------------------
 def inferensi(servis, harga):
+    # Aturan inferensi dalam bentuk (service, harga) => output kelayakan
     rules = {
         ('tinggi', 'murah'): 'sangat layak',
         ('tinggi', 'sedang'): 'layak',
@@ -100,6 +113,7 @@ def inferensi(servis, harga):
     }
 
     result = {}
+    # Evaluasi setiap kombinasi nilai fuzzy input
     for s_kat, s_val in servis.items():
         for h_kat, h_val in harga.items():
             alpha = min(s_val, h_val)
@@ -111,14 +125,23 @@ def inferensi(servis, harga):
                     result[kategori] = alpha
     return result
 
-# Defuzzifikasi (Center of Gravity)
+# -------------------------------
+# DEFUZZIFICATION: Center of Gravity (COG)
+# Mengubah fuzzy output ke skor numerik
+# -------------------------------
 def defuzzifikasi(output):
-    
     pembilang = sum(alpha * output_scores[kategori] for kategori, alpha in output.items())
     penyebut = sum(alpha for alpha in output.values())
     return pembilang / penyebut if penyebut != 0 else 0
 
-# Main Program
+# -------------------------------
+# PROGRAM UTAMA
+# 1. Membaca data restoran.xlsx
+# 2. Melakukan fuzzification
+# 3. Menjalankan inferensi fuzzy
+# 4. Defuzzifikasi untuk mendapatkan skor
+# 5. Menyimpan 5 restoran terbaik ke peringkat.xlsx
+# -------------------------------
 def main():
     df = pd.read_excel("restoran.xlsx")
 
