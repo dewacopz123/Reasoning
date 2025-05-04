@@ -11,10 +11,10 @@ def fuzzify_service(x):
         rendah = 1
     elif 10 < x < 50:
         rendah = (50 - x) / (50 - 10)
-    elif x >= 50:
+    else:
         rendah = 0
 
-    # Sedang: 0 di 30, naik sampai 1 di 50, tetap 1 sampai 60, turun sampai 0 di 80
+    # Sedang: 0 di 30, naik ke 1 di 50, turun ke 0 di 80
     if 30 < x < 50:
         sedang = (x - 30) / (50 - 30)
     elif 50 <= x <= 60:
@@ -24,7 +24,7 @@ def fuzzify_service(x):
     else:
         sedang = max(0, sedang)
 
-    # Tinggi: 0 di 60, naik ke 1 di 90, tetap 1 sampai 100
+    # Tinggi: 0 di 60, naik ke 1 di 90, tetap 1 hingga 100
     if 60 < x < 90:
         tinggi = (x - 60) / (90 - 60)
     elif x >= 90:
@@ -38,7 +38,6 @@ def fuzzify_service(x):
         'tinggi': tinggi
     }
 
-
 # Fungsi Keanggotaan Harga
 def fuzzify_harga(x):
     murah = 0
@@ -50,7 +49,7 @@ def fuzzify_harga(x):
         murah = 1
     elif 25000 < x < 35000:
         murah = (35000 - x) / (35000 - 25000)
-    elif x >= 35000:
+    else:
         murah = 0
 
     # Sedang: 0 di 30.000, naik ke 1 di 40.000, turun ke 0 di 50.000
@@ -77,17 +76,16 @@ def fuzzify_harga(x):
         'mahal': mahal
     }
 
-
-# Skor Output
+# (dari grafik kelayakan)
 output_scores = {
-    'tidak layak': 20,
+    'tidak layak': 10,
     'kurang': 35,
-    'cukup': 50,
+    'cukup': 55,
     'layak': 75,
-    'sangat layak': 90
+    'sangat layak': 100
 }
 
-# Inferensi Berdasarkan Aturan
+# Inferensi 
 def inferensi(servis, harga):
     rules = {
         ('tinggi', 'murah'): 'sangat layak',
@@ -113,10 +111,11 @@ def inferensi(servis, harga):
                     result[kategori] = alpha
     return result
 
-# Defuzzifikasi (Center of gravity)
+# Defuzzifikasi (Center of Gravity)
 def defuzzifikasi(output):
-    pembilang = sum(alpha * z for alpha, z in output)
-    penyebut = sum(alpha for alpha, _ in output)
+    # output: dict {'kategori': alpha}
+    pembilang = sum(alpha * output_scores[kategori] for kategori, alpha in output.items())
+    penyebut = sum(alpha for alpha in output.values())
     return pembilang / penyebut if penyebut != 0 else 0
 
 # Main Program
