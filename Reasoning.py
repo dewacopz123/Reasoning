@@ -51,7 +51,7 @@ def fuzzify_harga(x):
     mahal = 0
 
     # Murah: Derajat keanggotaan penuh (1) jika x <= 25000, turun ke 0 di x = 35000
-    if x <= 25000:
+    if x == 25000:
         murah = 1
     elif 25000 < x < 35000:
         murah = (35000 - x) / (35000 - 25000)
