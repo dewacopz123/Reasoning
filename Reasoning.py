@@ -113,7 +113,7 @@ def inferensi(servis, harga):
 
 # Defuzzifikasi (Center of Gravity)
 def defuzzifikasi(output):
-    # output: dict {'kategori': alpha}
+    
     pembilang = sum(alpha * output_scores[kategori] for kategori, alpha in output.items())
     penyebut = sum(alpha for alpha in output.values())
     return pembilang / penyebut if penyebut != 0 else 0
