@@ -68,7 +68,6 @@ def fuzzify_harga(x):
     elif x == 40000:
         sedang = 1
 
-
     # Mahal: Naik dari 0 di x = 45000 ke 1 di x = 55000, tetap 1 sampai x = 70000
     if 45000 < x < 55000:
         mahal = (x - 45000) / (55000 - 45000)
