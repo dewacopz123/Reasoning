@@ -59,14 +59,15 @@ def fuzzify_harga(x):
         murah = 0
 
     # Sedang: Naik dari 0 di x = 30000 ke 1 di x = 40000, tetap 1 hingga x = 45000, turun ke 0 di x = 50000
-    if 30000 < x < 40000:
+    if x <= 30000 or x >= 50000:
+        sedang = 0
+    elif 30000 < x < 40000:
         sedang = (x - 30000) / (40000 - 30000)
-    elif 40000 <= x <= 45000:
+    elif 40000 < x < 50000:
+        sedang = (50000 - x) / (50000 - 40000)
+    elif x == 40000:
         sedang = 1
-    elif 45000 < x < 50000:
-        sedang = (50000 - x) / (50000 - 45000)
-    else:
-        sedang = max(0, sedang)
+
 
     # Mahal: Naik dari 0 di x = 45000 ke 1 di x = 55000, tetap 1 sampai x = 70000
     if 45000 < x < 55000:
